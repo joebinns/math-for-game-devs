@@ -1,30 +1,68 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Utilities;
 using Random = UnityEngine.Random;
 
 public class Screensaver : MonoBehaviour
 {
-    [SerializeField] private Transform logo;
+    [SerializeField] private Transform _logo;
     [SerializeField] private float _movementSpeed = 1;
+    [SerializeField] private List<Transform> _corners = new List<Transform>();
+    [SerializeField] private Transform _outerCube;
     
     private Vector3 _movementDirection;
     private Vector3 _previousMovementDirection;
+    private Vector3 _latestContactPosition;
 
     private void Start()
     {
         // Start moving in an arbitrary direction.
-        _movementDirection = Random.onUnitSphere;
+        //_movementDirection = Random.onUnitSphere;
+        _movementDirection = new Vector3(4.75f, 2.7f, 0f).normalized;
         _previousMovementDirection = _movementDirection;
     }
 
     private void FixedUpdate()
     {
-        logo.position += _movementDirection * _movementSpeed * Time.fixedDeltaTime;
+        // Move
+        _logo.position += _movementDirection * _movementSpeed * Time.fixedDeltaTime;
+
+        var displacementToNearestCorner = CalculateDisplacementToNearestCorner();
+        FindObjectOfType<CrowdEffects>().DisplacementToNearestCorner = displacementToNearestCorner;
+        FindObjectOfType<CrowdEffects>().CurrentDirection = _movementDirection;
+
     }
 
+    private Vector3 CalculateDisplacementToNearestCorner()
+    {
+        var shortestDisplacement = Vector3.one * 100f;
+        // Check nearest corner
+        foreach (Transform corner in _corners)
+        {
+            // Calculate displacement
+            var displacement = (corner.position - _logo.position);
+            // Store shortest displacement
+            if (displacement.magnitude < shortestDisplacement.magnitude)
+            {
+                shortestDisplacement = displacement;
+            }
+        }
+
+        var maximumDistance = _outerCube.lossyScale.magnitude / 2f;
+        var displacementToNearestCorner = shortestDisplacement / maximumDistance;
+        return (displacementToNearestCorner);
+    }
+    
     private void OnCollisionEnter(Collision collision)
     {
+        _latestContactPosition = collision.GetContact(0).point;
+        Reflect(collision);
+    }
+    
+    private void OnCollisionStay(Collision collision)
+    {
+        _latestContactPosition = collision.GetContact(0).point;
         Reflect(collision);
     }
 
@@ -51,8 +89,8 @@ public class Screensaver : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
-        Debug.DrawRay(logo.position, _movementDirection * 1.5f, Gizmos.color);
+        Debug.DrawRay(_latestContactPosition, _movementDirection * 3f, Gizmos.color);
         Gizmos.color = Color.red;
-        Debug.DrawRay(logo.position, -_previousMovementDirection * 1.5f, Gizmos.color);
+        Debug.DrawRay(_latestContactPosition, -_previousMovementDirection * 3f, Gizmos.color);
     }
 }

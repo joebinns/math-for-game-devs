@@ -23,5 +23,17 @@ namespace Utilities
         {
             a = Mathf.Sqrt(Mathf.Pow(b, 2) + Mathf.Pow(c, 2) - 2 * b * c * Mathf.Cos(alpha));
         }
+
+        public static float CompositePerlinNoise(float x, float y, int octaves = 1)
+        {
+            var noise = 0f;
+            var frequency = 1f;
+            for (int i = 0; i < octaves; i++)
+            {
+                noise += Mathf.PerlinNoise(frequency * x, frequency * y);
+                frequency *= 2f;
+            }
+            return noise / (float)octaves;
+        }
     }
 }
