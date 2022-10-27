@@ -31,7 +31,6 @@ public class Screensaver : MonoBehaviour
         var displacementToNearestCorner = CalculateDisplacementToNearestCorner();
         FindObjectOfType<CrowdEffects>().DisplacementToNearestCorner = displacementToNearestCorner;
         FindObjectOfType<CrowdEffects>().CurrentDirection = _movementDirection;
-
     }
 
     private Vector3 CalculateDisplacementToNearestCorner()
