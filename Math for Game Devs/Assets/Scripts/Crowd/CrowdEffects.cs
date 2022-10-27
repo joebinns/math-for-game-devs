@@ -9,6 +9,7 @@ public class CrowdEffects : MonoBehaviour
     public Vector3 DisplacementToNearestCorner;
     [SerializeField] private List<Vibrate> _vibrates = new List<Vibrate>();
     
+    
     private Animator _animator;
     private CrowdState _crowdState = CrowdState.Bored;
     public CrowdState CrowdState
@@ -35,12 +36,18 @@ public class CrowdEffects : MonoBehaviour
         var alignment = Vector3.Dot(CurrentDirection, DisplacementToNearestCorner.normalized); // '+1' for directly towards corner '-1' for directly away from corner. 
         alignment = Mathf.Clamp(alignment, 0f, 1f);
         alignment = Mathf.Pow(alignment, 4);
-
+        
         foreach (var vibrate in _vibrates)
         {
             vibrate.Magnitude = Mathf.Lerp(vibrate.Magnitude, 2f * alignment, 0.1f);
         }
 
+        if (alignment > 0.5f)
+        {
+            CrowdState = CrowdState.Excited;
+        }
+        
+        // When you hit a wall, if it is not a corner, then trigger disappointed
     }
 
     private void SetCrowdState(CrowdState crowdState)
@@ -53,13 +60,13 @@ public class CrowdEffects : MonoBehaviour
                 _animator.SetTrigger("Excited");
                 break;
             case CrowdState.Disappointed:
-                _animator.SetTrigger("Dissapointed");
+                _animator.SetTrigger("Disappointed");
                 break;
             case CrowdState.Ecstatic:
-                // TODO: Create ecstatic animation
+                _animator.SetTrigger("Ecstatic");
                 break;
         }
-        _crowdState = crowdState;
+        _crowdState = crowdState; // TODO: Handle this exclusively within the animator!
     }
 }
 

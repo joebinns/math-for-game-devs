@@ -10,7 +10,12 @@ public class Screensaver : MonoBehaviour
     [SerializeField] private float _movementSpeed = 1;
     [SerializeField] private List<Transform> _corners = new List<Transform>();
     [SerializeField] private Transform _outerCube;
-    
+    [SerializeField] private Oscillator _outerCubeOscillator;
+
+    private Vector3 _movementVelocity
+    {
+        get => _movementDirection * _movementSpeed;
+    }
     private Vector3 _movementDirection;
     private Vector3 _previousMovementDirection;
     private Vector3 _latestContactPosition;
@@ -56,6 +61,7 @@ public class Screensaver : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         _latestContactPosition = collision.GetContact(0).point;
+        FindObjectOfType<CrowdEffects>().CrowdState = CrowdState.Disappointed; // TODO: Check if corner
         Reflect(collision);
     }
     
@@ -81,6 +87,10 @@ public class Screensaver : MonoBehaviour
         theta = Mathf.Rad2Deg * 2f * (Mathf.PI / 2f - theta);
         var b = Quaternion.AngleAxis(theta, axisOfRotation) * a;
         
+        // Apply force to oscillator
+        _outerCubeOscillator.ApplyForce(Vector3.Dot(_movementVelocity, n) * n * 200f);
+        Debug.Log(Vector3.Dot(_movementVelocity, n) * n * 200f);
+
         _previousMovementDirection = _movementDirection;
         _movementDirection = b;
     }
