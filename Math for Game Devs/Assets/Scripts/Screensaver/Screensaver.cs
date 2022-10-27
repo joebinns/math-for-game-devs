@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Utilities;
-using Random = UnityEngine.Random;
 
 public class Screensaver : MonoBehaviour
 {
@@ -11,7 +9,10 @@ public class Screensaver : MonoBehaviour
     [SerializeField] private List<Transform> _corners = new List<Transform>();
     [SerializeField] private Transform _outerCube;
     [SerializeField] private Oscillator _outerCubeOscillator;
-
+    [SerializeField] private ParticleSystem _bounceParticleSystem;
+    [SerializeField] private Material _tvMaterial;
+    [SerializeField] private List<Color> _colors;
+    
     private Vector3 _movementVelocity
     {
         get => _movementDirection * _movementSpeed;
@@ -19,23 +20,59 @@ public class Screensaver : MonoBehaviour
     private Vector3 _movementDirection;
     private Vector3 _previousMovementDirection;
     private Vector3 _latestContactPosition;
+    private int _colorIndex;
+    private Vector3 _latestContactNormal;
 
     private void Start()
     {
         // Start moving in an arbitrary direction.
         //_movementDirection = Random.onUnitSphere;
-        _movementDirection = new Vector3(4.75f, 2.7f, 0f).normalized;
+        //_movementDirection = new Vector3(4.75f, 2.7f, 0f).normalized;
+        _movementDirection = new Vector3(4.25f / 5f, 2.2f, 0f).normalized;
         _previousMovementDirection = _movementDirection;
     }
 
     private void FixedUpdate()
     {
-        // Move
-        _logo.position += _movementDirection * _movementSpeed * Time.fixedDeltaTime;
+        Move();
+        
+        UpdateCrowdEffects();
+        
+        CollisionCheck();
+    }
 
+    private void Move()
+    {
+        _logo.position += _movementDirection * _movementSpeed * Time.fixedDeltaTime;
+    }
+
+    private void UpdateCrowdEffects()
+    {
         var displacementToNearestCorner = CalculateDisplacementToNearestCorner();
         FindObjectOfType<CrowdEffects>().DisplacementToNearestCorner = displacementToNearestCorner;
         FindObjectOfType<CrowdEffects>().CurrentDirection = _movementDirection;
+    }
+
+    private void CollisionCheck()
+    {
+        for (int dimension = 0; dimension < 3; dimension++)
+        {
+            for (int direction = -1; direction <= 1; direction+=2)
+            {
+                var rayVector = Vector3.zero;
+                var magnitude = 0.5f;
+                rayVector[dimension] = 1;
+                rayVector *= direction;
+                rayVector *= magnitude;
+                (bool didRayHit, RaycastHit raycastHit) = Raycast(rayVector);
+                
+                if (didRayHit)
+                {
+                    // If didRayHit, then bounce
+                    Bounce(raycastHit.point, raycastHit.normal);
+                }
+            }
+        }
     }
 
     private Vector3 CalculateDisplacementToNearestCorner()
@@ -58,23 +95,67 @@ public class Screensaver : MonoBehaviour
         return (displacementToNearestCorner);
     }
     
-    private void OnCollisionEnter(Collision collision)
+    private (bool, RaycastHit) Raycast(Vector3 rayVector)
     {
-        _latestContactPosition = collision.GetContact(0).point;
-        FindObjectOfType<CrowdEffects>().CrowdState = CrowdState.Disappointed; // TODO: Check if corner
-        Reflect(collision);
-    }
-    
-    private void OnCollisionStay(Collision collision)
-    {
-        _latestContactPosition = collision.GetContact(0).point;
-        Reflect(collision);
+        RaycastHit raycastHit;
+        Ray ray = new Ray(transform.position, rayVector.normalized);
+        int layerMask =~ gameObject.layer;
+        bool didRayHit = Physics.Raycast(ray, out raycastHit, rayVector.magnitude, layerMask);
+        //Debug.DrawRay(transform.position, rayVector, Color.blue);
+        return (didRayHit, raycastHit);
     }
 
-    private void Reflect(Collision collision)
+    private void NextColor()
+    {
+        var increment = _colors.Count / 2;
+        if (_colors.Count % 2 == 0)
+        {
+            // If even number of colours, then increase the increment in order to go up an odd amount (So that no colours are left unused).
+            increment++;
+        }
+        _colorIndex += increment;
+        _colorIndex %= _colors.Count;
+        var color = _colors[_colorIndex];
+        _tvMaterial.color = color;
+    }
+
+    private void Bounce(Vector3 position, Vector3 normal)
+    {
+        _latestContactPosition = position;
+        _latestContactNormal = normal;
+
+        Reflect(normal);
+        
+        ApplyForceToOscillator(normal);
+
+        PlayBounceParticleSystem(normal);
+        
+        NextColor();
+        
+        FindObjectOfType<CrowdEffects>().CrowdState = CrowdState.Disappointed; // TODO: Check if corner
+    }
+
+    private void ApplyForceToOscillator(Vector3 n)
+    {
+        // Apply force to oscillator
+        _outerCubeOscillator.ApplyForce(Vector3.Dot(_movementVelocity, n) * n * -25f);
+    }
+
+    private void PlayBounceParticleSystem(Vector3 n)
+    {
+        // Set particle system to face normal direction
+        _bounceParticleSystem.transform.LookAt(n);
+        //_bounceParticleSystem.transform.rotation = 
+
+        // Trigger particle emission burst
+        var emissionModule = _bounceParticleSystem.emission;
+        emissionModule.enabled = true;
+        _bounceParticleSystem.Play();
+    }
+
+    private void Reflect(Vector3 n)
     {
         var a = _movementDirection;
-        var n = collision.GetContact(0).normal;
         
         // Let THETA = angle between A and N.
         float theta;
@@ -86,10 +167,6 @@ public class Screensaver : MonoBehaviour
         // Rotate _movementDirection about the cross product's axis by THETA.
         theta = Mathf.Rad2Deg * 2f * (Mathf.PI / 2f - theta);
         var b = Quaternion.AngleAxis(theta, axisOfRotation) * a;
-        
-        // Apply force to oscillator
-        _outerCubeOscillator.ApplyForce(Vector3.Dot(_movementVelocity, n) * n * 200f);
-        Debug.Log(Vector3.Dot(_movementVelocity, n) * n * 200f);
 
         _previousMovementDirection = _movementDirection;
         _movementDirection = b;
@@ -101,5 +178,7 @@ public class Screensaver : MonoBehaviour
         Debug.DrawRay(_latestContactPosition, _movementDirection * 3f, Gizmos.color);
         Gizmos.color = Color.red;
         Debug.DrawRay(_latestContactPosition, -_previousMovementDirection * 3f, Gizmos.color);
+        
+        Debug.DrawRay(_bounceParticleSystem.transform.position, _latestContactNormal, Color.blue);
     }
 }
