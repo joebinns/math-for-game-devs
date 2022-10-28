@@ -144,7 +144,7 @@ public class Screensaver : MonoBehaviour
     private void PlayBounceParticleSystem(Vector3 n)
     {
         // Set particle system to face normal direction
-        _bounceParticleSystem.transform.LookAt(transform.position + n); // Face normal
+        //_bounceParticleSystem.transform.LookAt(transform.position + n); // Face normal
         _bounceParticleSystem.transform.LookAt(transform.position + _movementVelocity); // Face new velocity
 
         // Trigger particle emission burst
