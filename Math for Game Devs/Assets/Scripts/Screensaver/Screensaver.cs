@@ -55,23 +55,50 @@ public class Screensaver : MonoBehaviour
 
     private void CollisionCheck()
     {
+        var raysThatHit = new List<Vector3>();
+        var raycastHits = new List<RaycastHit>();
         for (int dimension = 0; dimension < 3; dimension++)
         {
-            for (int direction = -1; direction <= 1; direction+=2)
+            for (int direction = -1; direction <= 1; direction += 2)
             {
                 var rayVector = Vector3.zero;
-                var magnitude = 0.5f;
+                var magnitude = 0.5f; // This is the distance from the centre of the cube to to the edge of the cube
                 rayVector[dimension] = 1;
                 rayVector *= direction;
                 rayVector *= magnitude;
                 (bool didRayHit, RaycastHit raycastHit) = Raycast(rayVector);
-                
+
                 if (didRayHit)
                 {
-                    // If didRayHit, then bounce
-                    Bounce(raycastHit.point, raycastHit.normal);
+                    raysThatHit.Add(rayVector);
+                    raycastHits.Add(raycastHit);
                 }
             }
+        }
+
+        bool isCorner = false;
+        for (int i = 0; i < raysThatHit.Count; i++)
+        {
+            var rayVector = raysThatHit[i];
+            var raycastHit = raycastHits[i];
+
+            if (raycastHit.distance < 0.25f) // Bounce artificially late, for greater impact and more leniant corner detection.
+            {
+                Bounce(raycastHit.point, raycastHit.normal);
+            }
+            
+            if (raysThatHit.Count == 1)
+            {
+                return;
+            }
+            
+            // Otherwise, a corner is hit.
+            isCorner = true;
+        }
+        
+        if (isCorner)
+        {
+            Debug.Log("CORNER");
         }
     }
 
