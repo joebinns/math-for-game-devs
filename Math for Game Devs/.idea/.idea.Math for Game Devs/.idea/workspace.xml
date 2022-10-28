@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ad5d346a-36af-4b48-8e65-e78257445867" name="Changes" comment="" />
+    <list default="true" id="ad5d346a-36af-4b48-8e65-e78257445867" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Math for Game Devs/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Math for Game Devs/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Materials/TV.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Materials/TV.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Sprites/fans-bored-front.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Sprites/fans-bored-front.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Sprites/fans-bored-side.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Sprites/fans-bored-side.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Sprites/fans-excited-front.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Sprites/fans-excited-front.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Sprites/fans-excited-side.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Sprites/fans-excited-side.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Universal RP/Universal Render Pipeline Asset.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Universal RP/Universal Render Pipeline Asset.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Lecture-1_Assignment-2.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Lecture-1_Assignment-2.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Crowd/CrowdEffects.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Crowd/CrowdEffects.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Screensaver/Screensaver.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Screensaver/Screensaver.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/ShaderGraphSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ShaderGraphSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UserSettings/Layouts/default-2021.dwlt" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/Layouts/default-2021.dwlt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -11,6 +24,7 @@
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Camera/CursorMode.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Crowd/CrowdEffects.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Crowd/Vibrate.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.visualeffectgraph@12.1.7/Editor/Models/VFXGraph.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -79,6 +93,7 @@
       <workItem from="1666886526607" duration="7496000" />
       <workItem from="1666900362864" duration="3383000" />
       <workItem from="1666939369613" duration="2253000" />
+      <workItem from="1666945982384" duration="5377000" />
     </task>
     <servers />
   </component>

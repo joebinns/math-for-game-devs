@@ -39,7 +39,7 @@ public class CrowdEffects : MonoBehaviour
         
         foreach (var vibrate in _vibrates)
         {
-            vibrate.Magnitude = Mathf.Lerp(vibrate.Magnitude, 2f * alignment, 0.1f);
+            vibrate.Magnitude = Mathf.Lerp(vibrate.Magnitude, 2f * alignment, 0.1f); // TODO: Try using 0.5f * Time.fixedDeltaTime for t.
         }
 
         if (alignment > 0.5f)

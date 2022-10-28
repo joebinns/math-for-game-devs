@@ -82,7 +82,7 @@ public class Screensaver : MonoBehaviour
             var rayVector = raysThatHit[i];
             var raycastHit = raycastHits[i];
 
-            if (raycastHit.distance < 0.25f) // Bounce artificially late, for greater impact and more leniant corner detection.
+            if (raycastHit.distance < 0.4f) // Bounce artificially late, for more leniant corner detection and greater impact.
             {
                 Bounce(raycastHit.point, raycastHit.normal);
             }
@@ -158,6 +158,8 @@ public class Screensaver : MonoBehaviour
         PlayBounceParticleSystem(normal);
         
         NextColor();
+        
+        FindObjectOfType<ColorSelector>().Flash();
         
         FindObjectOfType<CrowdEffects>().CrowdState = CrowdState.Disappointed; // TODO: Check if corner
     }
