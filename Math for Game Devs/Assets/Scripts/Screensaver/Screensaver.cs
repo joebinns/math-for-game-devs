@@ -22,13 +22,13 @@ public class Screensaver : MonoBehaviour
     private Vector3 _latestContactPosition;
     private int _colorIndex;
     private Vector3 _latestContactNormal;
+    private int _consecutiveMissedCorners;
 
     private void Start()
     {
         // Start moving in an arbitrary direction.
         //_movementDirection = Random.onUnitSphere;
-        //_movementDirection = new Vector3(4.75f, 2.7f, 0f).normalized;
-        _movementDirection = new Vector3(4.25f / 5f, 2.2f, 0f).normalized;
+        _movementDirection = new Vector3(4.25f, -4.4f, 0f).normalized;
         _previousMovementDirection = _movementDirection;
     }
 
@@ -43,7 +43,9 @@ public class Screensaver : MonoBehaviour
 
     private void Move()
     {
-        _logo.position += _movementDirection * _movementSpeed * Time.fixedDeltaTime;
+        var speed = _movementSpeed * Mathf.Clamp((1 + 0.0125f * _consecutiveMissedCorners), 1f, 1.25f);
+        
+        _logo.position += _movementDirection * speed * Time.fixedDeltaTime;
     }
 
     private void UpdateCrowdEffects()
@@ -82,13 +84,14 @@ public class Screensaver : MonoBehaviour
             var rayVector = raysThatHit[i];
             var raycastHit = raycastHits[i];
 
-            if (raycastHit.distance < 0.4f) // Bounce artificially late, for more leniant corner detection and greater impact.
+            if (raycastHit.distance < 0.4f) // Bounce artificially late, for more lenient corner detection and greater impact.
             {
                 Bounce(raycastHit.point, raycastHit.normal);
             }
             
             if (raysThatHit.Count == 1)
             {
+                _consecutiveMissedCorners++;
                 return;
             }
             
@@ -98,7 +101,8 @@ public class Screensaver : MonoBehaviour
         
         if (isCorner)
         {
-            Debug.Log("CORNER");
+            FindObjectOfType<ColorSelector>().Flash();
+            _consecutiveMissedCorners = 0;
         }
     }
 
@@ -155,12 +159,10 @@ public class Screensaver : MonoBehaviour
         
         ApplyForceToOscillator(normal);
 
-        PlayBounceParticleSystem(normal);
+        PlayBounceParticleSystem(position, normal);
         
         NextColor();
-        
-        FindObjectOfType<ColorSelector>().Flash();
-        
+
         FindObjectOfType<CrowdEffects>().CrowdState = CrowdState.Disappointed; // TODO: Check if corner
     }
 
@@ -170,16 +172,18 @@ public class Screensaver : MonoBehaviour
         _outerCubeOscillator.ApplyForce(Vector3.Dot(_movementVelocity, n) * n * -25f);
     }
 
-    private void PlayBounceParticleSystem(Vector3 n)
+    private void PlayBounceParticleSystem(Vector3 p, Vector3 n)
     {
         // Set particle system to face normal direction
-        //_bounceParticleSystem.transform.LookAt(transform.position + n); // Face normal
-        _bounceParticleSystem.transform.LookAt(transform.position + _movementVelocity); // Face new velocity
-
+        _bounceParticleSystem.transform.LookAt(n); // Face normal
+        //_bounceParticleSystem.transform.LookAt(_movementVelocity); // Face new velocity
+        
+        var emitParams = new ParticleSystem.EmitParams();
+        emitParams.position = p;
+        emitParams.applyShapeToPosition = true;
+        
         // Trigger particle emission burst
-        var emissionModule = _bounceParticleSystem.emission;
-        emissionModule.enabled = true;
-        _bounceParticleSystem.Play();
+        _bounceParticleSystem.Emit(emitParams, 6);
     }
 
     private void Reflect(Vector3 n)

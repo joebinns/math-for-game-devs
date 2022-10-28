@@ -33,7 +33,6 @@ public class ColorSelector : MonoBehaviour
         // Change renderer colors
         foreach (var renderer in _renderersToFlash)
         {
-            Debug.Log("renderer");
             if (renderer is SpriteRenderer spriteRenderer)
             {
                 // If the renderer is for a sprite, then change the renderer color directly

@@ -412,7 +412,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 327860895}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -4.25, y: 2.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 5.4}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -434,7 +434,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _logo: {fileID: 327860899}
-  _movementSpeed: 8
+  _movementSpeed: 10
   _corners:
   - {fileID: 1771036608}
   - {fileID: 5331943}
@@ -461,7 +461,6 @@ GameObject:
   - component: {fileID: 421623205}
   - component: {fileID: 421623207}
   - component: {fileID: 421623206}
-  - component: {fileID: 421623208}
   m_Layer: 2
   m_Name: Dust Burst
   m_TagString: Effects
@@ -476,14 +475,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 421623204}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.03, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 428900805}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!199 &421623206
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -1190,7 +1189,7 @@ ParticleSystem:
     boxThickness: {x: 0, y: 0, z: 0}
     radiusThickness: 1
     donutRadius: 0.2
-    m_Position: {x: 0, y: 0, z: -0.25}
+    m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: 0, y: 0, z: 0}
     m_Scale: {x: 1, y: 1, z: 1}
     placementMode: 0
@@ -1385,7 +1384,7 @@ ParticleSystem:
           m_PostInfinity: 2
           m_RotationOrder: 4
   EmissionModule:
-    enabled: 1
+    enabled: 0
     serializedVersion: 4
     rateOverTime:
       serializedVersion: 2
@@ -2662,12 +2661,12 @@ ParticleSystem:
         m_RotationOrder: 4
     inWorldSpace: 0
   InheritVelocityModule:
-    enabled: 0
-    m_Mode: 0
+    enabled: 1
+    m_Mode: 1
     m_Curve:
       serializedVersion: 2
-      minMaxState: 3
-      scalar: 0.1
+      minMaxState: 0
+      scalar: 1
       minScalar: 0.05
       maxCurve:
         serializedVersion: 2
@@ -4202,7 +4201,7 @@ ParticleSystem:
         m_NumAlphaKeys: 2
     range: {x: 0, y: 1}
   CollisionModule:
-    enabled: 1
+    enabled: 0
     serializedVersion: 4
     type: 1
     collisionMode: 0
@@ -5331,19 +5330,6 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
---- !u!114 &421623208
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 421623204}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2b8322540d0b3a4e95eb09c4f9379e5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  followTarget: {fileID: 327860899}
 --- !u!1 &428900804
 GameObject:
   m_ObjectHideFlags: 0
@@ -5394,7 +5380,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _localEquilibriumPosition: {x: 0, y: 0, z: 0}
   ForceScale: {x: 1, y: 1, z: 1}
-  _stiffness: 50
+  _stiffness: 100
   _damper: 5
   _mass: 1
 --- !u!1 &515411583
@@ -5969,7 +5955,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _defaultColor: {r: 0, g: 0, b: 0, a: 1}
   _flashColor: {r: 1, g: 1, b: 1, a: 1}
-  _duration: 0.1
+  _duration: 0.15
   _renderersToFlash:
   - {fileID: 1872840421}
   - {fileID: 1857992920}
@@ -6425,6 +6411,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c540b645eb1a3a8429853732b20690cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _sensitivity: 0.15
 --- !u!4 &1598083022
 Transform:
   m_ObjectHideFlags: 0
@@ -6760,7 +6747,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 543450653682612044}
-  - component: {fileID: 919132149205233143}
   m_Layer: 0
   m_Name: Outer Cube
   m_TagString: Untagged
@@ -6768,21 +6754,3 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &919132149205233143
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 919132149205233142}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 960de6d6a6caca646a281fa930c13c73, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _defaultColor: {r: 0, g: 0, b: 0, a: 1}
-  _flashColor: {r: 1, g: 1, b: 1, a: 1}
-  _duration: 0.15
-  _renderersToFlash:
-  - {fileID: 327860897}
-  _shouldFlashCameraBackground: 0

@@ -3,6 +3,8 @@ using UnityEngine.InputSystem;
 
 public class CameraRotator : MonoBehaviour
 {
+    [SerializeField] private float _sensitivity = 0.15f;
+    
     private Vector2 _cursorPosition = Vector3.zero;
     private Vector2 _cursorDelta;
     private Transform _cameraPivot;
@@ -20,7 +22,7 @@ public class CameraRotator : MonoBehaviour
 
     private void Update()
     {
-        _cursorPosition += _cursorDelta;
+        _cursorPosition += _cursorDelta * _sensitivity;
         _cursorPosition.y = Mathf.Clamp(_cursorPosition.y, -60f, 60f);
         
         var rotation = _cameraPivot.rotation.eulerAngles;

@@ -3,16 +3,18 @@
   <component name="ChangeListManager">
     <list default="true" id="ad5d346a-36af-4b48-8e65-e78257445867" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Math for Game Devs/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Math for Game Devs/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Materials/Black.mat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Materials/Black.mat.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Materials/Dynamic Material.mat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Materials/Dynamic Material.mat.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Art/Materials/TV.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Materials/TV.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Art/Sprites/fans-bored-front.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Sprites/fans-bored-front.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Art/Sprites/fans-bored-side.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Sprites/fans-bored-side.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Art/Sprites/fans-excited-front.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Sprites/fans-excited-front.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Art/Sprites/fans-excited-side.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Sprites/fans-excited-side.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Art/Universal RP/Universal Render Pipeline Asset.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Universal RP/Universal Render Pipeline Asset.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Materials/White.mat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Art/Materials/White.mat.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Lecture-1_Assignment-2.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Lecture-1_Assignment-2.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Crowd/CrowdEffects.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Crowd/CrowdEffects.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Camera/CameraRotator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Camera/CameraRotator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Screensaver/ColorSelector.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Screensaver/ColorSelector.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Screensaver/Screensaver.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Screensaver/Screensaver.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ShaderGraphSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ShaderGraphSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/URPProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/URPProjectSettings.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UserSettings/Layouts/default-2021.dwlt" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/Layouts/default-2021.dwlt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -94,6 +96,8 @@
       <workItem from="1666900362864" duration="3383000" />
       <workItem from="1666939369613" duration="2253000" />
       <workItem from="1666945982384" duration="5377000" />
+      <workItem from="1666956242232" duration="2333000" />
+      <workItem from="1666959720521" duration="2724000" />
     </task>
     <servers />
   </component>
