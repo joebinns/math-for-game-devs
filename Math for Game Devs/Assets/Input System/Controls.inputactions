@@ -6,13 +6,31 @@
             "id": "814b8715-ce9f-4ce9-8fdb-c16290c61b11",
             "actions": [
                 {
-                    "name": "Look",
+                    "name": "Camera",
                     "type": "PassThrough",
                     "id": "16007200-79f0-44ab-aa3c-70ba8b269c6f",
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Aim",
+                    "type": "PassThrough",
+                    "id": "22194af3-2e4f-45dd-8e17-c75a0b669db6",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Launch",
+                    "type": "Button",
+                    "id": "fcc21386-b785-4423-8c18-6ab1d97e1f27",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -23,7 +41,29 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Look",
+                    "action": "Camera",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4070b53e-9059-4280-bec1-984856b2789f",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Aim",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b8c94874-947a-49df-9285-11a8b0b03902",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Launch",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

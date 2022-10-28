@@ -1,9 +1,21 @@
 using System.Collections.Generic;
+using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 using Utilities;
 
 public class Screensaver : MonoBehaviour
 {
+    public float MovementSpeed
+    {
+        get => _movementSpeed;
+        set => _movementSpeed = value;
+    }
+    public Vector3 MovementDirection
+    {
+        get => _movementDirection;
+        set => _movementDirection = value;
+    }
+    
     [SerializeField] private Transform _logo;
     [SerializeField] private float _movementSpeed = 1;
     [SerializeField] private List<Transform> _corners = new List<Transform>();
@@ -43,7 +55,7 @@ public class Screensaver : MonoBehaviour
 
     private void Move()
     {
-        var speed = _movementSpeed * Mathf.Clamp((1 + 0.0125f * _consecutiveMissedCorners), 1f, 1.25f);
+        var speed = _movementSpeed * Mathf.Clamp((1 - 0.025f * _consecutiveMissedCorners), 0.5f, 1f);
         
         _logo.position += _movementDirection * speed * Time.fixedDeltaTime;
     }
