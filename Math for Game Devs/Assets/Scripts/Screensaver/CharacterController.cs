@@ -114,32 +114,52 @@ public class CharacterController : MonoBehaviour
         }
 
         bool isCorner = false;
+        var point = Vector3.zero;
+        var normal = Vector3.zero;
+        var overshoot = transform.position;
         for (int i = 0; i < raysThatHit.Count; i++)
         {
             var rayVector = raysThatHit[i];
             var raycastHit = raycastHits[i];
 
+            point += raycastHit.point;
+            normal += raycastHit.normal;
+
             if (raycastHit.distance <= rayVector.magnitude * 0.8f) // Bounce artificially late, for more lenient corner detection and greater impact.
             {
-                // TODO: Only bounce if moving in the direction of the wall (to prevent double bouncing)
+                // Only bounce if moving in the direction of the wall (to prevent double bouncing)
                 if (Vector3.Dot(_movementDirection, rayVector) > 0)
                 {
                     Reflect(raycastHit.normal);
-                    _logo.position = raycastHit.point - rayVector;
-                    BounceEffects(raycastHit.point, raycastHit.normal);
+                    overshoot += Maths.ComponentWiseProduct((raycastHit.point - rayVector), rayVector.normalized);
                 }
             }
-            
+
             if (raysThatHit.Count == 1)
             {
                 _consecutiveMissedCorners++;
-                return;
+                break;
             }
             
             // Otherwise, a corner is hit.
             isCorner = true;
         }
-        
+
+        // TODO: FIX THIS SO THAT IT WORKS WITH THE FOR LOOP...
+        if (raycastHits.Count > 0)
+        {
+            //if (raycastHit.distance <= rayVector.magnitude * 0.8f)
+            {
+                //if (Vector3.Dot(_movementDirection, rayVector) > 0)
+                {
+                    point /= raycastHits.Count;
+                    normal /= raycastHits.Count;
+                    _logo.position = overshoot;
+                    BounceEffects(point, normal);
+                }
+            }
+        }
+
         if (isCorner)
         {
             //FindObjectOfType<ColorSelector>().Flash();

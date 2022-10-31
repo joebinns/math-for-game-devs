@@ -35,5 +35,14 @@ namespace Utilities
             }
             return noise / (float)octaves;
         }
+
+        public static Vector3 ComponentWiseProduct(Vector3 a, Vector3 b)
+        {
+            var product = Vector3.zero;
+            product.x = a.x * b.x;
+            product.y = a.y * b.y;
+            product.z = a.z * b.z;
+            return product;
+        }
     }
 }
