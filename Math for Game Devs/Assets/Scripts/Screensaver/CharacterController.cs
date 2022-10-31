@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Utilities;
 
-public class Screensaver : MonoBehaviour
+public class CharacterController : MonoBehaviour
 {
     public float BaseMovementSpeed
     {
@@ -47,6 +47,7 @@ public class Screensaver : MonoBehaviour
     private int _colorIndex;
     private Vector3 _latestContactNormal;
     private int _consecutiveMissedCorners;
+    private float _boxWidth = 0.75f;
 
     private void Start()
     {
@@ -73,11 +74,11 @@ public class Screensaver : MonoBehaviour
         (bool didRayHit, RaycastHit raycastHit) = Raycast(deltaPosition);
         if (didRayHit)
         {
-            Debug.Log("pog");
-            _logo.position = raycastHit.point;
-            Bounce(raycastHit.point, raycastHit.normal); // TODO: Check that Bounce isn't getting called here AND in the collider thing
+            Reflect(raycastHit.normal);
+            _logo.position = raycastHit.point - deltaPosition.normalized * _boxWidth / 2f;
+            BounceEffects(raycastHit.point, raycastHit.normal);
         }
-        deltaPosition = _movementDirection * MovementSpeed * Time.fixedDeltaTime;
+        deltaPosition = (Time.timeScale == 0f) ? Vector3.zero : _movementDirection * MovementSpeed * Time.fixedDeltaTime;
         
         _logo.position += deltaPosition;
     }
@@ -98,7 +99,7 @@ public class Screensaver : MonoBehaviour
             for (int direction = -1; direction <= 1; direction += 2)
             {
                 var rayVector = Vector3.zero;
-                var magnitude = 0.75f/2f; // This is the distance from the centre of the cube to to the edge of the cube
+                var magnitude = _boxWidth / 2f; // This is the distance from the centre of the cube to to the edge of the cube
                 rayVector[dimension] = 1;
                 rayVector *= direction;
                 rayVector *= magnitude;
@@ -123,7 +124,9 @@ public class Screensaver : MonoBehaviour
                 // TODO: Only bounce if moving in the direction of the wall (to prevent double bouncing)
                 if (Vector3.Dot(_movementDirection, rayVector) > 0)
                 {
-                    Bounce(raycastHit.point, raycastHit.normal);
+                    Reflect(raycastHit.normal);
+                    _logo.position = raycastHit.point - rayVector;
+                    BounceEffects(raycastHit.point, raycastHit.normal);
                 }
             }
             
@@ -188,18 +191,13 @@ public class Screensaver : MonoBehaviour
         _tvMaterial.color = color;
     }
 
-    private void Bounce(Vector3 position, Vector3 normal)
+    private void BounceEffects(Vector3 position, Vector3 normal)
     {
         _latestContactPosition = position;
         _latestContactNormal = normal;
 
-        Reflect(normal);
-        
-        _outerCubeOscillator.transform.localPosition = Vector3.zero;
-        FindObjectOfType<HitStop>().Stop();
         ApplyForceToOscillator(normal);
-
-
+        
         PlayBounceParticleSystem(position, normal);
         
         NextColor();
@@ -207,6 +205,9 @@ public class Screensaver : MonoBehaviour
         FindObjectOfType<ColorSelector>().Flash();
 
         FindObjectOfType<CrowdEffects>().CrowdState = CrowdState.Disappointed; // TODO: Check if corner
+        
+        _outerCubeOscillator.transform.localPosition = Vector3.zero;
+        FindObjectOfType<HitStop>().Stop();
     }
 
     private void ApplyForceToOscillator(Vector3 n)

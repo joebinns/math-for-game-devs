@@ -71,6 +71,7 @@ public class Oscillator : MonoBehaviour
         else
         {
             Vector3 displacement = CalculateDisplacementDueToForce(force);
+            displacement = (Time.timeScale == 0f) ? Vector3.zero : displacement;
             transform.localPosition += Vector3.Scale(displacement, ForceScale);
         }
     }
