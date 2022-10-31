@@ -73,6 +73,8 @@ public class Screensaver : MonoBehaviour
         (bool didRayHit, RaycastHit raycastHit) = Raycast(deltaPosition);
         if (didRayHit)
         {
+            Debug.Log("pog");
+            _logo.position = raycastHit.point;
             Bounce(raycastHit.point, raycastHit.normal); // TODO: Check that Bounce isn't getting called here AND in the collider thing
         }
         deltaPosition = _movementDirection * MovementSpeed * Time.fixedDeltaTime;
@@ -116,7 +118,7 @@ public class Screensaver : MonoBehaviour
             var rayVector = raysThatHit[i];
             var raycastHit = raycastHits[i];
 
-            if (raycastHit.distance < rayVector.magnitude * 0.8f) // Bounce artificially late, for more lenient corner detection and greater impact.
+            if (raycastHit.distance <= rayVector.magnitude * 0.8f) // Bounce artificially late, for more lenient corner detection and greater impact.
             {
                 // TODO: Only bounce if moving in the direction of the wall (to prevent double bouncing)
                 if (Vector3.Dot(_movementDirection, rayVector) > 0)
@@ -188,14 +190,15 @@ public class Screensaver : MonoBehaviour
 
     private void Bounce(Vector3 position, Vector3 normal)
     {
-        Debug.Log("Bounce");
-        
         _latestContactPosition = position;
         _latestContactNormal = normal;
 
         Reflect(normal);
         
+        _outerCubeOscillator.transform.localPosition = Vector3.zero;
+        FindObjectOfType<HitStop>().Stop();
         ApplyForceToOscillator(normal);
+
 
         PlayBounceParticleSystem(position, normal);
         
@@ -204,8 +207,6 @@ public class Screensaver : MonoBehaviour
         FindObjectOfType<ColorSelector>().Flash();
 
         FindObjectOfType<CrowdEffects>().CrowdState = CrowdState.Disappointed; // TODO: Check if corner
-        
-        FindObjectOfType<HitStop>().Stop();
     }
 
     private void ApplyForceToOscillator(Vector3 n)

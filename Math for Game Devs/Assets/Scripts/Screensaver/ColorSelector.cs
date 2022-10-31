@@ -10,7 +10,7 @@ public class ColorSelector : MonoBehaviour
     [SerializeField] private List<Renderer> _renderersToFlash;
     [SerializeField] private bool _shouldFlashCameraBackground;
 
-    public void Flash()
+    public void Flash() // TODO: Make shader to have new colour spread out from hit point.
     {
         StartCoroutine(FlashCoroutine());
     }
