@@ -75,10 +75,8 @@ public class Screensaver : MonoBehaviour
         {
             Bounce(raycastHit.point, raycastHit.normal); // TODO: Check that Bounce isn't getting called here AND in the collider thing
         }
-        //_logo.position += didRayHit ? (raycastHit.point - transform.position) / 2f : deltaPosition;
-        
         deltaPosition = _movementDirection * MovementSpeed * Time.fixedDeltaTime;
-
+        
         _logo.position += deltaPosition;
     }
 
@@ -139,7 +137,7 @@ public class Screensaver : MonoBehaviour
         
         if (isCorner)
         {
-            FindObjectOfType<ColorSelector>().Flash();
+            //FindObjectOfType<ColorSelector>().Flash();
             _consecutiveMissedCorners = 0;
         }
     }
@@ -190,10 +188,10 @@ public class Screensaver : MonoBehaviour
 
     private void Bounce(Vector3 position, Vector3 normal)
     {
+        Debug.Log("Bounce");
+        
         _latestContactPosition = position;
         _latestContactNormal = normal;
-        
-        // TODO: Freeze time on hit
 
         Reflect(normal);
         
@@ -202,8 +200,12 @@ public class Screensaver : MonoBehaviour
         PlayBounceParticleSystem(position, normal);
         
         NextColor();
+        
+        FindObjectOfType<ColorSelector>().Flash();
 
         FindObjectOfType<CrowdEffects>().CrowdState = CrowdState.Disappointed; // TODO: Check if corner
+        
+        FindObjectOfType<HitStop>().Stop();
     }
 
     private void ApplyForceToOscillator(Vector3 n)
@@ -214,6 +216,8 @@ public class Screensaver : MonoBehaviour
 
     private void PlayBounceParticleSystem(Vector3 p, Vector3 n)
     {
+        // TODO: Vary particle system based on speed
+        
         // Set particle system to face normal direction
         _bounceParticleSystem.transform.LookAt(n); // Face normal
         //_bounceParticleSystem.transform.LookAt(_movementVelocity); // Face new velocity
