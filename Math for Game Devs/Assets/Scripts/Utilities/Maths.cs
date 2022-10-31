@@ -44,5 +44,13 @@ namespace Utilities
             product.z = a.z * b.z;
             return product;
         }
+
+        public static Vector3 Absolute(Vector3 a)
+        {
+            a.x = Mathf.Abs(a.x);
+            a.y = Mathf.Abs(a.y);
+            a.z = Mathf.Abs(a.z);
+            return a;
+        }
     }
 }

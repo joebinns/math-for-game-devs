@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using Utilities;
 
@@ -116,22 +118,22 @@ public class CharacterController : MonoBehaviour
         bool isCorner = false;
         var point = Vector3.zero;
         var normal = Vector3.zero;
-        var overshoot = transform.position;
+        var overshoots = new List<Vector3>();
         for (int i = 0; i < raysThatHit.Count; i++)
         {
             var rayVector = raysThatHit[i];
             var raycastHit = raycastHits[i];
 
-            point += raycastHit.point;
-            normal += raycastHit.normal;
-
             if (raycastHit.distance <= rayVector.magnitude * 0.8f) // Bounce artificially late, for more lenient corner detection and greater impact.
             {
                 // Only bounce if moving in the direction of the wall (to prevent double bouncing)
-                if (Vector3.Dot(_movementDirection, rayVector) > 0)
+                if (Vector3.Dot(_movementDirection, rayVector) > 0f)
                 {
+                    point += raycastHit.point;
+                    normal += raycastHit.normal;
+                    
                     Reflect(raycastHit.normal);
-                    overshoot += Maths.ComponentWiseProduct((raycastHit.point - rayVector), rayVector.normalized);
+                    overshoots.Add(Maths.ComponentWiseProduct((raycastHit.point - rayVector), Maths.Absolute(rayVector.normalized)));
                 }
             }
 
@@ -144,20 +146,27 @@ public class CharacterController : MonoBehaviour
             // Otherwise, a corner is hit.
             isCorner = true;
         }
-
-        // TODO: FIX THIS SO THAT IT WORKS WITH THE FOR LOOP...
-        if (raycastHits.Count > 0)
+        
+        if (overshoots.Count > 0)
         {
-            //if (raycastHit.distance <= rayVector.magnitude * 0.8f)
+            point /= overshoots.Count;
+            normal /= overshoots.Count;
+            var totalOvershoot = point;
+            foreach (var overshoot in overshoots)
             {
-                //if (Vector3.Dot(_movementDirection, rayVector) > 0)
+                for (int i = 0; i < 3; i++)
                 {
-                    point /= raycastHits.Count;
-                    normal /= raycastHits.Count;
-                    _logo.position = overshoot;
-                    BounceEffects(point, normal);
+                    var axis = overshoot[i];
+                    if (axis != 0)
+                    {
+                        //Debug.Log(i + " " + axis);
+                        totalOvershoot[i] = axis;
+                    }
                 }
             }
+            //Debug.Log(totalOvershoot);
+            _logo.position = totalOvershoot;
+            BounceEffects(point, normal);
         }
 
         if (isCorner)
