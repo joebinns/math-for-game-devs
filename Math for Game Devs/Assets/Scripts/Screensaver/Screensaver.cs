@@ -1,23 +1,35 @@
 using System.Collections.Generic;
-using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 using Utilities;
 
 public class Screensaver : MonoBehaviour
 {
+    public float BaseMovementSpeed
+    {
+        get => _baseMovementSpeed;
+        set => _baseMovementSpeed = value;
+    }
+    public float MovementSpeedMultiplier
+    {
+        get => Mathf.Clamp((1f - 0.025f * _consecutiveMissedCorners), 0.1f, 1f);
+    }
     public float MovementSpeed
     {
-        get => _movementSpeed;
-        set => _movementSpeed = value;
+        get => BaseMovementSpeed * MovementSpeedMultiplier;
     }
     public Vector3 MovementDirection
     {
         get => _movementDirection;
         set => _movementDirection = value;
     }
+    public int ConsecutiveMissedCorners
+    {
+        get => _consecutiveMissedCorners;
+        set => _consecutiveMissedCorners = value;
+    }
     
     [SerializeField] private Transform _logo;
-    [SerializeField] private float _movementSpeed = 1;
+    [SerializeField] private float _baseMovementSpeed = 1;
     [SerializeField] private List<Transform> _corners = new List<Transform>();
     [SerializeField] private Transform _outerCube;
     [SerializeField] private Oscillator _outerCubeOscillator;
@@ -27,7 +39,7 @@ public class Screensaver : MonoBehaviour
     
     private Vector3 _movementVelocity
     {
-        get => _movementDirection * _movementSpeed;
+        get => _movementDirection * MovementSpeed;
     }
     private Vector3 _movementDirection;
     private Vector3 _previousMovementDirection;
@@ -40,24 +52,34 @@ public class Screensaver : MonoBehaviour
     {
         // Start moving in an arbitrary direction.
         //_movementDirection = Random.onUnitSphere;
-        _movementDirection = new Vector3(4.25f, -4.4f, 0f).normalized;
+        //_movementDirection = new Vector3(4.25f, -4.4f, 0f).normalized;
         _previousMovementDirection = _movementDirection;
     }
 
     private void FixedUpdate()
     {
         Move();
+        CollisionCheck();
         
         UpdateCrowdEffects();
-        
-        CollisionCheck();
     }
 
     private void Move()
     {
-        var speed = _movementSpeed * Mathf.Clamp((1 - 0.025f * _consecutiveMissedCorners), 0.5f, 1f);
+        // TODO: Reset speed multiplier if 'space' pressed when bouncing (with some input interval).
+        var deltaPosition = _movementDirection * MovementSpeed * Time.fixedDeltaTime;
         
-        _logo.position += _movementDirection * speed * Time.fixedDeltaTime;
+        // Prevent box missing collisions with walls
+        (bool didRayHit, RaycastHit raycastHit) = Raycast(deltaPosition);
+        if (didRayHit)
+        {
+            Bounce(raycastHit.point, raycastHit.normal); // TODO: Check that Bounce isn't getting called here AND in the collider thing
+        }
+        //_logo.position += didRayHit ? (raycastHit.point - transform.position) / 2f : deltaPosition;
+        
+        deltaPosition = _movementDirection * MovementSpeed * Time.fixedDeltaTime;
+
+        _logo.position += deltaPosition;
     }
 
     private void UpdateCrowdEffects()
@@ -76,7 +98,7 @@ public class Screensaver : MonoBehaviour
             for (int direction = -1; direction <= 1; direction += 2)
             {
                 var rayVector = Vector3.zero;
-                var magnitude = 0.5f; // This is the distance from the centre of the cube to to the edge of the cube
+                var magnitude = 0.75f/2f; // This is the distance from the centre of the cube to to the edge of the cube
                 rayVector[dimension] = 1;
                 rayVector *= direction;
                 rayVector *= magnitude;
@@ -96,9 +118,13 @@ public class Screensaver : MonoBehaviour
             var rayVector = raysThatHit[i];
             var raycastHit = raycastHits[i];
 
-            if (raycastHit.distance < 0.4f) // Bounce artificially late, for more lenient corner detection and greater impact.
+            if (raycastHit.distance < rayVector.magnitude * 0.8f) // Bounce artificially late, for more lenient corner detection and greater impact.
             {
-                Bounce(raycastHit.point, raycastHit.normal);
+                // TODO: Only bounce if moving in the direction of the wall (to prevent double bouncing)
+                if (Vector3.Dot(_movementDirection, rayVector) > 0)
+                {
+                    Bounce(raycastHit.point, raycastHit.normal);
+                }
             }
             
             if (raysThatHit.Count == 1)
@@ -166,6 +192,8 @@ public class Screensaver : MonoBehaviour
     {
         _latestContactPosition = position;
         _latestContactNormal = normal;
+        
+        // TODO: Freeze time on hit
 
         Reflect(normal);
         
@@ -204,14 +232,20 @@ public class Screensaver : MonoBehaviour
         
         // Let THETA = angle between A and N.
         float theta;
-        Maths.CosineRule((a + n).magnitude, out theta, n.magnitude, a.magnitude); // TODO: Implement homemade Magnitude().
-        
+        Maths.CosineRule((a + n).magnitude, out theta, n.magnitude, a.magnitude);
+
         // Calculate cross product of A and N.
-        var axisOfRotation = Vector3.Cross(a, n); // TODO: Implement homemade CrossProduct().
+        var axisOfRotation = Vector3.Cross(a, n);
 
         // Rotate _movementDirection about the cross product's axis by THETA.
         theta = Mathf.Rad2Deg * 2f * (Mathf.PI / 2f - theta);
         var b = Quaternion.AngleAxis(theta, axisOfRotation) * a;
+        
+        // Reverse the direction in the case that theta = 0;
+        if (a == b)
+        {
+            b = -a;
+        }
 
         _previousMovementDirection = _movementDirection;
         _movementDirection = b;

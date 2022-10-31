@@ -9,11 +9,10 @@ public class Launcher : MonoBehaviour
     [SerializeField] private float _sensitivity = 0.015f;
     [SerializeField] private LineRenderer _lineRenderer;
     [SerializeField] private Transform _container;
-
-    private bool _hasHeldRegistered;
+    
     private Vector2 _cursorPosition = Vector3.zero;
     private Vector2 _cursorDelta;
-    private Vector3 _velocity;
+    private Vector3 _launchVelocity;
 
     public void CursorDelta(InputAction.CallbackContext context)
     {
@@ -24,48 +23,43 @@ public class Launcher : MonoBehaviour
     {
         // Update cursor position
         _cursorPosition += _cursorDelta * _sensitivity;
+        _cursorPosition.x = Mathf.Clamp(_cursorPosition.x, -0.5f, 0.5f);
+        _cursorPosition.y = Mathf.Clamp(_cursorPosition.y, -0.5f, 0.5f);
         
         // Move line renderer start position to cursor position;
-        _velocity = new Vector3(Mathf.Clamp(_cursorPosition.x, -0.45f, 0.45f) * _container.lossyScale.x,
-            Mathf.Clamp(_cursorPosition.y, -0.45f, 0.45f) * _container.lossyScale.y, 0f);
-        _lineRenderer.SetPosition(0, _velocity);
+        var containerCursorPosition = new Vector3(_cursorPosition.x * _container.lossyScale.x, _cursorPosition.y * _container.lossyScale.y, 0f);
+        _lineRenderer.SetPosition(0, containerCursorPosition);
+        
+        _launchVelocity = new Vector3(containerCursorPosition.normalized.x, containerCursorPosition.normalized.y, 0f);
     }
 
     public void Launch(InputAction.CallbackContext context)
     {
         if (context.started)
         {
-            _hasHeldRegistered = false;
-            
             // Disable camera rotator
             FindObjectOfType<CameraRotator>().enabled = false;
             
             // Enable line renderer, reset cursor position
             _lineRenderer.enabled = true;
             _cursorPosition = Vector3.zero;
-        }
-        else if (context.performed)
-        {
-            FindObjectOfType<Screensaver>().MovementSpeed = _velocity.magnitude * 0f;
+            
+            // Reset cube
+            // TODO: Change this to Lerp / spring.
+            FindObjectOfType<Screensaver>().BaseMovementSpeed = _launchVelocity.magnitude * 0f;
             FindObjectOfType<Screensaver>().transform.position = Vector3.zero;
-            _hasHeldRegistered = true;
         }
         else if (context.canceled)
         {
-            if (_hasHeldRegistered)
-            {
-                // Fire!
-                FindObjectOfType<Screensaver>().MovementSpeed = _velocity.magnitude * 2.5f; // TODO: SOMETHING WITH LOSING SPEED AFTER EACH HIT? GAIN SPEED WHEN CORNER HIT!
-                FindObjectOfType<Screensaver>().MovementDirection = -_velocity.normalized;
-            }
-            else
-            {
-                // Cancel
-            }
+            // Fire!
+            FindObjectOfType<Screensaver>().ConsecutiveMissedCorners = 0;
+            FindObjectOfType<Screensaver>().BaseMovementSpeed = _launchVelocity.magnitude * 20f;
+            FindObjectOfType<Screensaver>().MovementDirection = -_launchVelocity.normalized;
+
             _lineRenderer.enabled = false;
             FindObjectOfType<CameraRotator>().enabled = true;
         }
     }
-    
-    
+
+
 }
