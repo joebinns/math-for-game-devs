@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(CharacterPhysics))]
 public class HitEffects : MonoBehaviour
 {
-    private CharacterController _characterController;
+    private CharacterPhysics _characterController;
     
     [SerializeField] private Oscillator _outerCubeOscillator;
     [SerializeField] private ParticleSystem _bounceParticleSystem;
@@ -14,11 +14,9 @@ public class HitEffects : MonoBehaviour
 
     private void Awake()
     {
-        _characterController = GetComponent<CharacterController>();
+        _characterController = GetComponent<CharacterPhysics>();
     }
 
-    
-    
     public void BounceEffects(Vector3 position, Vector3 normal)
     {
         ApplyForceToOscillator(Vector3.Dot(_characterController.MovementVelocity, normal) * normal * -25f);

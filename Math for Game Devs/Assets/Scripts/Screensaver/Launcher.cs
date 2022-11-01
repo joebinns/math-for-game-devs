@@ -46,15 +46,15 @@ public class Launcher : MonoBehaviour
             
             // Reset cube
             // TODO: Change this to Lerp / spring.
-            FindObjectOfType<CharacterController>().BaseMovementSpeed = _launchVelocity.magnitude * 0f;
-            FindObjectOfType<CharacterController>().transform.position = Vector3.zero;
+            FindObjectOfType<CharacterPhysics>().BaseMovementSpeed = _launchVelocity.magnitude * 0f;
+            FindObjectOfType<CharacterPhysics>().transform.position = Vector3.zero;
         }
         else if (context.canceled)
         {
             // Fire!
-            FindObjectOfType<CharacterController>().MovementSpeedMultiplierCount = 0;
-            FindObjectOfType<CharacterController>().BaseMovementSpeed = _launchVelocity.magnitude * 20f;
-            FindObjectOfType<CharacterController>().MovementDirection = -_launchVelocity.normalized;
+            FindObjectOfType<CharacterPhysics>().MovementSpeedMultiplierCount = 0;
+            FindObjectOfType<CharacterPhysics>().BaseMovementSpeed = _launchVelocity.magnitude * 20f;
+            FindObjectOfType<CharacterPhysics>().MovementDirection = -_launchVelocity.normalized;
 
             _lineRenderer.enabled = false;
             FindObjectOfType<CameraRotator>().enabled = true;

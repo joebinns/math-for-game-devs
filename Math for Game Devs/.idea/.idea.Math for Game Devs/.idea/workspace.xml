@@ -12,6 +12,7 @@
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Camera/CursorMode.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Crowd/CrowdEffects.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Crowd/Vibrate.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Screensaver/CharacterPhysics.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Screensaver/HitEffects.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Screensaver/HitStop.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Screensaver/Launcher.cs" root0="FORCE_HIGHLIGHTING" />
@@ -95,6 +96,7 @@
       <workItem from="1667289890678" duration="5407000" />
       <workItem from="1667296873966" duration="3570000" />
       <workItem from="1667302166401" duration="6672000" />
+      <workItem from="1667311352895" duration="5561000" />
     </task>
     <servers />
   </component>

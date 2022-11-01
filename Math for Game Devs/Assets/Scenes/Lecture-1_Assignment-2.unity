@@ -333,7 +333,7 @@ MonoBehaviour:
   - {fileID: 778381319}
   - {fileID: 581113844}
   - {fileID: 1216035721}
-  _characterController: {fileID: 327860901}
+  _characterPhysics: {fileID: 327860904}
   _corners:
   - {fileID: 1771036608}
   - {fileID: 5331943}
@@ -353,6 +353,7 @@ GameObject:
   - component: {fileID: 327860902}
   - component: {fileID: 327860901}
   - component: {fileID: 327860903}
+  - component: {fileID: 327860904}
   m_Layer: 2
   m_Name: Inner Cube
   m_TagString: Untagged
@@ -439,8 +440,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 968f90c79b4392044bc74cdb9042c0f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseMovementSpeed: 1
-  _outerCube: {fileID: 543450653682612044}
 --- !u!114 &327860902
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -477,6 +476,19 @@ MonoBehaviour:
   - {r: 1, g: 0, b: 0.43137255, a: 1}
   - {r: 0.5137255, g: 0.21960784, b: 0.9254902, a: 1}
   - {r: 0.22745098, g: 0.5254902, b: 1, a: 1}
+--- !u!114 &327860904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 327860895}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b672e553f7dd92a4589111c836135c36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _baseMovementSpeed: 20
 --- !u!1 &421623204
 GameObject:
   m_ObjectHideFlags: 0

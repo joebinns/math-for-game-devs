@@ -4,7 +4,7 @@ using UnityEngine;
 public class CrowdEffects : MonoBehaviour
 {
     [SerializeField] private List<Vibrate> _vibrates = new List<Vibrate>();
-    [SerializeField] private CharacterController _characterController;
+    [SerializeField] private CharacterPhysics _characterPhysics;
     [SerializeField] private List<Transform> _corners = new List<Transform>();
 
     private Animator _animator;
@@ -32,7 +32,7 @@ public class CrowdEffects : MonoBehaviour
         
         // Take dot product of velocity and vector to nearest corner.
         // Use this to adjust magnitude.
-        var alignment = Vector3.Dot(_characterController.MovementDirection, displacementToNearestCorner.normalized); // '+1' for directly towards corner '-1' for directly away from corner. 
+        var alignment = Vector3.Dot(_characterPhysics.MovementDirection, displacementToNearestCorner.normalized); // '+1' for directly towards corner '-1' for directly away from corner. 
         alignment = Mathf.Clamp(alignment, 0f, 1f);
         alignment = Mathf.Pow(alignment, 4);
         
