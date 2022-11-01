@@ -17,6 +17,8 @@ public class HitEffects : MonoBehaviour
         _characterController = GetComponent<CharacterController>();
     }
 
+    
+    
     public void BounceEffects(Vector3 position, Vector3 normal)
     {
         ApplyForceToOscillator(Vector3.Dot(_characterController.MovementVelocity, normal) * normal * -25f);

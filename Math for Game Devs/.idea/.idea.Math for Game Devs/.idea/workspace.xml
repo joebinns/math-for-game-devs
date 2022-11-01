@@ -15,6 +15,7 @@
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Screensaver/HitEffects.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Screensaver/HitStop.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Screensaver/Launcher.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Utilities/Unity.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.visualeffectgraph@12.1.7/Editor/Models/VFXGraph.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
@@ -93,6 +94,7 @@
       <workItem from="1667246109705" duration="1732000" />
       <workItem from="1667289890678" duration="5407000" />
       <workItem from="1667296873966" duration="3570000" />
+      <workItem from="1667302166401" duration="6672000" />
     </task>
     <servers />
   </component>

@@ -3,13 +3,13 @@ using UnityEngine;
 
 public class CrowdEffects : MonoBehaviour
 {
-    public Vector3 CurrentDirection;
-    public Vector3 DisplacementToNearestCorner;
     [SerializeField] private List<Vibrate> _vibrates = new List<Vibrate>();
-    
-    
+    [SerializeField] private CharacterController _characterController;
+    [SerializeField] private List<Transform> _corners = new List<Transform>();
+
     private Animator _animator;
     private CrowdState _crowdState = CrowdState.Bored;
+    
     public CrowdState CrowdState
     {
         get => _crowdState;
@@ -23,7 +23,8 @@ public class CrowdEffects : MonoBehaviour
 
     private void FixedUpdate()
     {
-        var proximityToCorner = Mathf.Clamp01(1f - Mathf.Pow(DisplacementToNearestCorner.magnitude, 1));
+        var displacementToNearestCorner = CalculateDisplacementToNearestCorner();
+        var proximityToCorner = Mathf.Clamp01(1f - Mathf.Pow(displacementToNearestCorner.magnitude, 1));
         foreach (var vibrate in _vibrates)
         {
             vibrate.Rate = 8f * proximityToCorner;
@@ -31,7 +32,7 @@ public class CrowdEffects : MonoBehaviour
         
         // Take dot product of velocity and vector to nearest corner.
         // Use this to adjust magnitude.
-        var alignment = Vector3.Dot(CurrentDirection, DisplacementToNearestCorner.normalized); // '+1' for directly towards corner '-1' for directly away from corner. 
+        var alignment = Vector3.Dot(_characterController.MovementDirection, displacementToNearestCorner.normalized); // '+1' for directly towards corner '-1' for directly away from corner. 
         alignment = Mathf.Clamp(alignment, 0f, 1f);
         alignment = Mathf.Pow(alignment, 4);
         
@@ -46,6 +47,26 @@ public class CrowdEffects : MonoBehaviour
         }
         
         // When you hit a wall, if it is not a corner, then trigger disappointed
+    }
+
+    private Vector3 CalculateDisplacementToNearestCorner()
+    {
+        var shortestDisplacement = Vector3.one * 100f;
+        // Check nearest corner
+        foreach (Transform corner in _corners)
+        {
+            // Calculate displacement
+            var displacement = (corner.position - transform.position);
+            // Store shortest displacement
+            if (displacement.magnitude < shortestDisplacement.magnitude)
+            {
+                shortestDisplacement = displacement;
+            }
+        }
+
+        var maximumDistance = (_corners[0].position - Vector3.zero).magnitude; //_outerCube.lossyScale.magnitude / 2f;
+        var displacementToNearestCorner = shortestDisplacement / maximumDistance;
+        return (displacementToNearestCorner);
     }
 
     private void SetCrowdState(CrowdState crowdState)

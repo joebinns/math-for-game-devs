@@ -5,6 +5,25 @@ using Utilities;
 
 public class CharacterController : MonoBehaviour
 {
+    #region Movement Fields
+    [SerializeField] private float _baseMovementSpeed = 1;
+    private Vector3 _previousMovementDirection;
+    private Vector3 _latestContactPosition;
+    private Vector3 _latestContactNormal;
+    #endregion
+    
+    #region Collider Fields
+    private float _boxWidth = 0.75f;
+    #endregion
+    
+    #region Input Buffer Fields
+    private float _preInputBufferDistance = 0f; // To be reset when input pressed. Waits to see if condition is met.
+    private float _postInputBufferDistance = 0f; // To be reset when condition met. Waits to see if input pressed.
+    private const float INPUT_BUFFER = 1.5f; // Distance
+
+    #endregion
+    
+    #region Movement Properties
     public float BaseMovementSpeed
     {
         get => _baseMovementSpeed;
@@ -16,19 +35,9 @@ public class CharacterController : MonoBehaviour
     public float MovementSpeedMultiplier => Mathf.Clamp((1f - 0.025f * MovementSpeedMultiplierCount), 0.1f, 1f);
     public float MovementSpeed => BaseMovementSpeed * MovementSpeedMultiplier;
     public Vector3 MovementVelocity => MovementSpeed * MovementDirection;
+    #endregion
 
-
-    [SerializeField] private Transform _logo;
-    [SerializeField] private float _baseMovementSpeed = 1;
-    [SerializeField] private List<Transform> _corners = new List<Transform>();
-    [SerializeField] private Transform _outerCube;
-
-    private Vector3 _previousMovementDirection;
-    private Vector3 _latestContactPosition;
-    private Vector3 _latestContactNormal;
-    private float _boxWidth = 0.75f;
-
-    private void Start()
+    private void Awake()
     {
         _previousMovementDirection = MovementDirection;
     }
@@ -37,80 +46,80 @@ public class CharacterController : MonoBehaviour
     {
         InputBuffer();
     }
-
-    private void FixedUpdate()
-    {
-        Move();
-        CollisionCheck();
-        UpdateCrowdEffects();
-    }
-
-
-    private float _preInputBufferTimer = 0f; // To be reset when input pressed. Waits to see if condition is met.
-    private float _postInputBufferTimer = 0f; // To be reset when condition met. Waits to see if input pressed.
-    private float _inputBuffer = 1.5f; // Distance
-
+    
     private void InputBuffer()
     {
-        _preInputBufferTimer -= Time.deltaTime * MovementSpeed; // Speed = Distance / Time --> Distance = Speed * Time
-        _postInputBufferTimer -= Time.deltaTime * MovementSpeed; // Speed = Distance / Time --> Distance = Speed * Time
+        // Using distance (= speed * time) for the buffer, as time felt inconsistent with varying speeds.
+        _preInputBufferDistance -= Time.deltaTime * MovementSpeed;
+        _postInputBufferDistance -= Time.deltaTime * MovementSpeed;
     }
-    
+
     public void BounceInput(InputAction.CallbackContext context)
     {
         // When button pressed, reset coyote time counter
         if (context.performed)
         {
-            if (_postInputBufferTimer >= 0f)
+            if (_postInputBufferDistance >= 0f)
             {
                 MovementSpeedMultiplierCount = 0;
                 FindObjectOfType<HitEffects>().BounceEffects(_latestContactPosition, _latestContactNormal);
-                _postInputBufferTimer = 0f;
+                _postInputBufferDistance = 0f;
             }
             else
             {
-                _preInputBufferTimer = _inputBuffer;
+                _preInputBufferDistance = INPUT_BUFFER;
             }
         }
+    }
+    
+    private void FixedUpdate()
+    {
+        Move();
+        CollisionCheck();
     }
 
     private void Move()
     {
-        // TODO: Reset speed multiplier if 'space' pressed when bouncing (with some input interval).
-        var deltaPosition = MovementDirection * MovementSpeed * Time.fixedDeltaTime;
+        var deltaPosition = MovementVelocity * Time.fixedDeltaTime;
+
+        CheckPath(deltaPosition);
+
+        deltaPosition = (Time.timeScale == 0f) ? Vector3.zero : MovementVelocity * Time.fixedDeltaTime;
         
+        transform.position += deltaPosition;
+    }
+
+    private void CheckPath(Vector3 deltaPosition)
+    {
         // Prevent box missing collisions with walls
-        (bool didRayHit, RaycastHit raycastHit) = Raycast(deltaPosition);
+        (bool didRayHit, RaycastHit raycastHit) = Utilities.Unity.Raycast(transform.position, deltaPosition, gameObject.layer);
         if (didRayHit)
         {
-            Reflect(raycastHit.normal);
-            _logo.position = raycastHit.point - deltaPosition.normalized * _boxWidth / 2f;
-
-            //BounceEffects(raycastHit.point, raycastHit.normal);
+            // Set position to be flush with wall
+            transform.position = raycastHit.point - deltaPosition.normalized * _boxWidth / 2f;
             
+            Reflect(raycastHit.normal);
+            
+            // TODO: Move this out of here. Have separate scripts for the physics and for the inputs.
+            // Check input buffer
             _latestContactPosition = raycastHit.point;
             _latestContactNormal = raycastHit.normal;
-            if (_preInputBufferTimer >= 0f)
+            if (_preInputBufferDistance >= 0f)
             {
-                MovementSpeedMultiplierCount = 0;
-                FindObjectOfType<HitEffects>().BounceEffects(raycastHit.point, raycastHit.normal);
-                _preInputBufferTimer = 0f;
+                SuccessfulBounce();
+                _preInputBufferDistance = 0f;
             }
             else
             {
-                _postInputBufferTimer = _inputBuffer;
+                _postInputBufferDistance = INPUT_BUFFER;
             }
         }
-        deltaPosition = (Time.timeScale == 0f) ? Vector3.zero : MovementDirection * MovementSpeed * Time.fixedDeltaTime;
-        
-        _logo.position += deltaPosition;
     }
 
-    private void UpdateCrowdEffects() // TODO: Change this to an event, which is subscribed to by CrowdEffects
+    private void SuccessfulBounce()
     {
-        var displacementToNearestCorner = CalculateDisplacementToNearestCorner();
-        FindObjectOfType<CrowdEffects>().DisplacementToNearestCorner = displacementToNearestCorner;
-        FindObjectOfType<CrowdEffects>().CurrentDirection = MovementDirection;
+        MovementSpeedMultiplierCount = 0;
+        FindObjectOfType<HitEffects>().BounceEffects(_latestContactPosition, _latestContactNormal);
     }
 
     private void CollisionCheck()
@@ -126,7 +135,7 @@ public class CharacterController : MonoBehaviour
                 rayVector[dimension] = 1;
                 rayVector *= direction;
                 rayVector *= magnitude;
-                (bool didRayHit, RaycastHit raycastHit) = Raycast(rayVector);
+                (bool didRayHit, RaycastHit raycastHit) = Utilities.Unity.Raycast(transform.position, rayVector, gameObject.layer);
 
                 if (didRayHit)
                 {
@@ -180,26 +189,24 @@ public class CharacterController : MonoBehaviour
                     var axis = overshoot[i];
                     if (axis != 0)
                     {
-                        //Debug.Log(i + " " + axis);
                         totalOvershoot[i] = axis;
                     }
                 }
             }
-            //Debug.Log(totalOvershoot);
-            _logo.position = totalOvershoot;
+            transform.position = totalOvershoot;
             //BounceEffects(point, normal);
             
             _latestContactPosition = point;
             _latestContactNormal = normal;
-            if (_preInputBufferTimer >= 0f)
+            if (_preInputBufferDistance >= 0f)
             {
                 MovementSpeedMultiplierCount = 0;
                 FindObjectOfType<HitEffects>().BounceEffects(point, normal); // Change this to an event, which is subscribed to by HitEffects
-                _preInputBufferTimer = 0f;
+                _preInputBufferDistance = 0f;
             }
             else
             {
-                _postInputBufferTimer = _inputBuffer;
+                _postInputBufferDistance = INPUT_BUFFER;
             }
         }
 
@@ -209,43 +216,6 @@ public class CharacterController : MonoBehaviour
             //_consecutiveMissedCorners = 0;
         }
     }
-
-    private Vector3 CalculateDisplacementToNearestCorner()
-    {
-        var shortestDisplacement = Vector3.one * 100f;
-        // Check nearest corner
-        foreach (Transform corner in _corners)
-        {
-            // Calculate displacement
-            var displacement = (corner.position - _logo.position);
-            // Store shortest displacement
-            if (displacement.magnitude < shortestDisplacement.magnitude)
-            {
-                shortestDisplacement = displacement;
-            }
-        }
-
-        var maximumDistance = _outerCube.lossyScale.magnitude / 2f;
-        var displacementToNearestCorner = shortestDisplacement / maximumDistance;
-        return (displacementToNearestCorner);
-    }
-    
-    private (bool, RaycastHit) Raycast(Vector3 rayVector)
-    {
-        RaycastHit raycastHit;
-        Ray ray = new Ray(transform.position, rayVector.normalized);
-        int layerMask =~ gameObject.layer;
-        bool didRayHit = Physics.Raycast(ray, out raycastHit, rayVector.magnitude, layerMask);
-        //Debug.DrawRay(transform.position, rayVector, Color.blue);
-        return (didRayHit, raycastHit);
-    }
-
-
-
-
-
-
-
 
     private void Reflect(Vector3 n)
     {
@@ -271,7 +241,7 @@ public class CharacterController : MonoBehaviour
         _previousMovementDirection = MovementDirection;
         MovementDirection = b;
     }
-
+    
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
