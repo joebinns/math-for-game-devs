@@ -6511,6 +6511,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: fcc21386-b785-4423-8c18-6ab1d97e1f27
     m_ActionName: Player/Launch[/Mouse/leftButton]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 327860901}
+        m_TargetAssemblyTypeName: CharacterController, Assembly-CSharp
+        m_MethodName: BounceInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 934ff6e7-078a-47e4-87f1-9e177ec62dc5
+    m_ActionName: Player/New action
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player

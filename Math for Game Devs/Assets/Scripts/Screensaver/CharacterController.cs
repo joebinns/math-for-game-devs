@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Utilities;
 
 public class CharacterController : MonoBehaviour
@@ -59,6 +61,11 @@ public class CharacterController : MonoBehaviour
         _previousMovementDirection = _movementDirection;
     }
 
+    private void Update()
+    {
+        InputBuffer();
+    }
+
     private void FixedUpdate()
     {
         Move();
@@ -67,6 +74,38 @@ public class CharacterController : MonoBehaviour
         UpdateCrowdEffects();
     }
 
+
+    private float _preInputBufferTimer = 0f; // To be reset when input pressed. Waits to see if condition is met.
+    private float _postInputBufferTimer = 0f; // To be reset when condition met. Waits to see if input pressed.
+    private float _inputBuffer = 1.5f; // Distance
+
+    private void InputBuffer()
+    {
+        _preInputBufferTimer -= Time.deltaTime * MovementSpeed; // Speed = Distance / Time --> Distance = Speed * Time
+        _postInputBufferTimer -= Time.deltaTime * MovementSpeed; // Speed = Distance / Time --> Distance = Speed * Time
+    }
+    
+    public void BounceInput(InputAction.CallbackContext context)
+    {
+        // When button pressed, reset coyote time counter
+        if (context.performed)
+        {
+            if (_postInputBufferTimer >= 0f)
+            {
+                _consecutiveMissedCorners = 0;
+                BounceEffects(_latestPoint, _latestNormal);
+                _postInputBufferTimer = 0f;
+            }
+            else
+            {
+                _preInputBufferTimer = _inputBuffer;
+            }
+        }
+    }
+
+    private Vector3 _latestPoint;
+    private Vector3 _latestNormal;
+    
     private void Move()
     {
         // TODO: Reset speed multiplier if 'space' pressed when bouncing (with some input interval).
@@ -78,7 +117,22 @@ public class CharacterController : MonoBehaviour
         {
             Reflect(raycastHit.normal);
             _logo.position = raycastHit.point - deltaPosition.normalized * _boxWidth / 2f;
-            BounceEffects(raycastHit.point, raycastHit.normal);
+
+            //BounceEffects(raycastHit.point, raycastHit.normal);
+            
+            _latestPoint = raycastHit.point;
+            _latestNormal = raycastHit.normal;
+            if (_preInputBufferTimer >= 0f)
+            {
+                Debug.Log("pre");
+                _consecutiveMissedCorners = 0;
+                BounceEffects(raycastHit.point, raycastHit.normal);
+                _preInputBufferTimer = 0f;
+            }
+            else
+            {
+                _postInputBufferTimer = _inputBuffer;
+            }
         }
         deltaPosition = (Time.timeScale == 0f) ? Vector3.zero : _movementDirection * MovementSpeed * Time.fixedDeltaTime;
         
@@ -166,13 +220,26 @@ public class CharacterController : MonoBehaviour
             }
             //Debug.Log(totalOvershoot);
             _logo.position = totalOvershoot;
-            BounceEffects(point, normal);
+            //BounceEffects(point, normal);
+            
+            _latestPoint = point;
+            _latestNormal = normal;
+            if (_preInputBufferTimer >= 0f)
+            {
+                _consecutiveMissedCorners = 0;
+                BounceEffects(point, normal);
+                _preInputBufferTimer = 0f;
+            }
+            else
+            {
+                _postInputBufferTimer = _inputBuffer;
+            }
         }
 
         if (isCorner)
         {
             //FindObjectOfType<ColorSelector>().Flash();
-            _consecutiveMissedCorners = 0;
+            //_consecutiveMissedCorners = 0;
         }
     }
 
