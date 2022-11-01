@@ -10,50 +10,27 @@ public class CharacterController : MonoBehaviour
         get => _baseMovementSpeed;
         set => _baseMovementSpeed = value;
     }
-    public float MovementSpeedMultiplier
-    {
-        get => Mathf.Clamp((1f - 0.025f * _consecutiveMissedCorners), 0.1f, 1f);
-    }
-    public float MovementSpeed
-    {
-        get => BaseMovementSpeed * MovementSpeedMultiplier;
-    }
-    public Vector3 MovementDirection
-    {
-        get => _movementDirection;
-        set => _movementDirection = value;
-    }
-    public int ConsecutiveMissedCorners
-    {
-        get => _consecutiveMissedCorners;
-        set => _consecutiveMissedCorners = value;
-    }
-    public Vector3 MovementVelocity
-    {
-        get =>  MovementSpeed * MovementDirection;
-    }
-    
+    public Vector3 MovementDirection { get; set; }
+
+    public int MovementSpeedMultiplierCount { get; set; }
+    public float MovementSpeedMultiplier => Mathf.Clamp((1f - 0.025f * MovementSpeedMultiplierCount), 0.1f, 1f);
+    public float MovementSpeed => BaseMovementSpeed * MovementSpeedMultiplier;
+    public Vector3 MovementVelocity => MovementSpeed * MovementDirection;
+
+
     [SerializeField] private Transform _logo;
     [SerializeField] private float _baseMovementSpeed = 1;
     [SerializeField] private List<Transform> _corners = new List<Transform>();
     [SerializeField] private Transform _outerCube;
-    
 
-
-    
-    private Vector3 _movementDirection;
     private Vector3 _previousMovementDirection;
     private Vector3 _latestContactPosition;
     private Vector3 _latestContactNormal;
-    private int _consecutiveMissedCorners;
     private float _boxWidth = 0.75f;
 
     private void Start()
     {
-        // Start moving in an arbitrary direction.
-        //_movementDirection = Random.onUnitSphere;
-        //_movementDirection = new Vector3(4.25f, -4.4f, 0f).normalized;
-        _previousMovementDirection = _movementDirection;
+        _previousMovementDirection = MovementDirection;
     }
 
     private void Update()
@@ -65,7 +42,6 @@ public class CharacterController : MonoBehaviour
     {
         Move();
         CollisionCheck();
-        
         UpdateCrowdEffects();
     }
 
@@ -87,7 +63,7 @@ public class CharacterController : MonoBehaviour
         {
             if (_postInputBufferTimer >= 0f)
             {
-                _consecutiveMissedCorners = 0;
+                MovementSpeedMultiplierCount = 0;
                 FindObjectOfType<HitEffects>().BounceEffects(_latestContactPosition, _latestContactNormal);
                 _postInputBufferTimer = 0f;
             }
@@ -101,7 +77,7 @@ public class CharacterController : MonoBehaviour
     private void Move()
     {
         // TODO: Reset speed multiplier if 'space' pressed when bouncing (with some input interval).
-        var deltaPosition = _movementDirection * MovementSpeed * Time.fixedDeltaTime;
+        var deltaPosition = MovementDirection * MovementSpeed * Time.fixedDeltaTime;
         
         // Prevent box missing collisions with walls
         (bool didRayHit, RaycastHit raycastHit) = Raycast(deltaPosition);
@@ -116,7 +92,7 @@ public class CharacterController : MonoBehaviour
             _latestContactNormal = raycastHit.normal;
             if (_preInputBufferTimer >= 0f)
             {
-                _consecutiveMissedCorners = 0;
+                MovementSpeedMultiplierCount = 0;
                 FindObjectOfType<HitEffects>().BounceEffects(raycastHit.point, raycastHit.normal);
                 _preInputBufferTimer = 0f;
             }
@@ -125,16 +101,16 @@ public class CharacterController : MonoBehaviour
                 _postInputBufferTimer = _inputBuffer;
             }
         }
-        deltaPosition = (Time.timeScale == 0f) ? Vector3.zero : _movementDirection * MovementSpeed * Time.fixedDeltaTime;
+        deltaPosition = (Time.timeScale == 0f) ? Vector3.zero : MovementDirection * MovementSpeed * Time.fixedDeltaTime;
         
         _logo.position += deltaPosition;
     }
 
-    private void UpdateCrowdEffects()
+    private void UpdateCrowdEffects() // TODO: Change this to an event, which is subscribed to by CrowdEffects
     {
         var displacementToNearestCorner = CalculateDisplacementToNearestCorner();
         FindObjectOfType<CrowdEffects>().DisplacementToNearestCorner = displacementToNearestCorner;
-        FindObjectOfType<CrowdEffects>().CurrentDirection = _movementDirection;
+        FindObjectOfType<CrowdEffects>().CurrentDirection = MovementDirection;
     }
 
     private void CollisionCheck()
@@ -172,7 +148,7 @@ public class CharacterController : MonoBehaviour
             if (raycastHit.distance <= rayVector.magnitude * 0.8f) // Bounce artificially late, for more lenient corner detection and greater impact.
             {
                 // Only bounce if moving in the direction of the wall (to prevent double bouncing)
-                if (Vector3.Dot(_movementDirection, rayVector) > 0f)
+                if (Vector3.Dot(MovementDirection, rayVector) > 0f)
                 {
                     point += raycastHit.point;
                     normal += raycastHit.normal;
@@ -184,7 +160,7 @@ public class CharacterController : MonoBehaviour
 
             if (raysThatHit.Count == 1)
             {
-                _consecutiveMissedCorners++;
+                MovementSpeedMultiplierCount++;
                 break;
             }
             
@@ -217,8 +193,8 @@ public class CharacterController : MonoBehaviour
             _latestContactNormal = normal;
             if (_preInputBufferTimer >= 0f)
             {
-                _consecutiveMissedCorners = 0;
-                FindObjectOfType<HitEffects>().BounceEffects(point, normal);
+                MovementSpeedMultiplierCount = 0;
+                FindObjectOfType<HitEffects>().BounceEffects(point, normal); // Change this to an event, which is subscribed to by HitEffects
                 _preInputBufferTimer = 0f;
             }
             else
@@ -273,7 +249,7 @@ public class CharacterController : MonoBehaviour
 
     private void Reflect(Vector3 n)
     {
-        var a = _movementDirection;
+        var a = MovementDirection;
         
         // Let THETA = angle between A and N.
         float theta;
@@ -292,14 +268,14 @@ public class CharacterController : MonoBehaviour
             b = -a;
         }
 
-        _previousMovementDirection = _movementDirection;
-        _movementDirection = b;
+        _previousMovementDirection = MovementDirection;
+        MovementDirection = b;
     }
 
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
-        Debug.DrawRay(_latestContactPosition, _movementDirection * 3f, Gizmos.color);
+        Debug.DrawRay(_latestContactPosition, MovementDirection * 3f, Gizmos.color);
         Gizmos.color = Color.red;
         Debug.DrawRay(_latestContactPosition, -_previousMovementDirection * 3f, Gizmos.color);
     }

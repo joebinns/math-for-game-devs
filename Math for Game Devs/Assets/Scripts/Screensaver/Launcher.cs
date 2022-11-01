@@ -52,7 +52,7 @@ public class Launcher : MonoBehaviour
         else if (context.canceled)
         {
             // Fire!
-            FindObjectOfType<CharacterController>().ConsecutiveMissedCorners = 0;
+            FindObjectOfType<CharacterController>().MovementSpeedMultiplierCount = 0;
             FindObjectOfType<CharacterController>().BaseMovementSpeed = _launchVelocity.magnitude * 20f;
             FindObjectOfType<CharacterController>().MovementDirection = -_launchVelocity.normalized;
 
