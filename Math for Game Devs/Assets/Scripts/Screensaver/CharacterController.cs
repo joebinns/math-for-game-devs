@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Utilities;
@@ -31,24 +28,22 @@ public class CharacterController : MonoBehaviour
         get => _consecutiveMissedCorners;
         set => _consecutiveMissedCorners = value;
     }
+    public Vector3 MovementVelocity
+    {
+        get =>  MovementSpeed * MovementDirection;
+    }
     
     [SerializeField] private Transform _logo;
     [SerializeField] private float _baseMovementSpeed = 1;
     [SerializeField] private List<Transform> _corners = new List<Transform>();
     [SerializeField] private Transform _outerCube;
-    [SerializeField] private Oscillator _outerCubeOscillator;
-    [SerializeField] private ParticleSystem _bounceParticleSystem;
-    [SerializeField] private Material _tvMaterial;
-    [SerializeField] private List<Color> _colors;
     
-    private Vector3 _movementVelocity
-    {
-        get => _movementDirection * MovementSpeed;
-    }
+
+
+    
     private Vector3 _movementDirection;
     private Vector3 _previousMovementDirection;
     private Vector3 _latestContactPosition;
-    private int _colorIndex;
     private Vector3 _latestContactNormal;
     private int _consecutiveMissedCorners;
     private float _boxWidth = 0.75f;
@@ -93,7 +88,7 @@ public class CharacterController : MonoBehaviour
             if (_postInputBufferTimer >= 0f)
             {
                 _consecutiveMissedCorners = 0;
-                BounceEffects(_latestPoint, _latestNormal);
+                FindObjectOfType<HitEffects>().BounceEffects(_latestContactPosition, _latestContactNormal);
                 _postInputBufferTimer = 0f;
             }
             else
@@ -103,9 +98,6 @@ public class CharacterController : MonoBehaviour
         }
     }
 
-    private Vector3 _latestPoint;
-    private Vector3 _latestNormal;
-    
     private void Move()
     {
         // TODO: Reset speed multiplier if 'space' pressed when bouncing (with some input interval).
@@ -120,13 +112,12 @@ public class CharacterController : MonoBehaviour
 
             //BounceEffects(raycastHit.point, raycastHit.normal);
             
-            _latestPoint = raycastHit.point;
-            _latestNormal = raycastHit.normal;
+            _latestContactPosition = raycastHit.point;
+            _latestContactNormal = raycastHit.normal;
             if (_preInputBufferTimer >= 0f)
             {
-                Debug.Log("pre");
                 _consecutiveMissedCorners = 0;
-                BounceEffects(raycastHit.point, raycastHit.normal);
+                FindObjectOfType<HitEffects>().BounceEffects(raycastHit.point, raycastHit.normal);
                 _preInputBufferTimer = 0f;
             }
             else
@@ -222,12 +213,12 @@ public class CharacterController : MonoBehaviour
             _logo.position = totalOvershoot;
             //BounceEffects(point, normal);
             
-            _latestPoint = point;
-            _latestNormal = normal;
+            _latestContactPosition = point;
+            _latestContactNormal = normal;
             if (_preInputBufferTimer >= 0f)
             {
                 _consecutiveMissedCorners = 0;
-                BounceEffects(point, normal);
+                FindObjectOfType<HitEffects>().BounceEffects(point, normal);
                 _preInputBufferTimer = 0f;
             }
             else
@@ -273,60 +264,12 @@ public class CharacterController : MonoBehaviour
         return (didRayHit, raycastHit);
     }
 
-    private void NextColor()
-    {
-        var increment = _colors.Count / 2;
-        if (_colors.Count % 2 == 0)
-        {
-            // If even number of colours, then increase the increment in order to go up an odd amount (So that no colours are left unused).
-            increment++;
-        }
-        _colorIndex += increment;
-        _colorIndex %= _colors.Count;
-        var color = _colors[_colorIndex];
-        _tvMaterial.color = color;
-    }
 
-    private void BounceEffects(Vector3 position, Vector3 normal)
-    {
-        _latestContactPosition = position;
-        _latestContactNormal = normal;
 
-        ApplyForceToOscillator(normal);
-        
-        PlayBounceParticleSystem(position, normal);
-        
-        NextColor();
-        
-        FindObjectOfType<ColorSelector>().Flash();
 
-        FindObjectOfType<CrowdEffects>().CrowdState = CrowdState.Disappointed; // TODO: Check if corner
-        
-        _outerCubeOscillator.transform.localPosition = Vector3.zero;
-        FindObjectOfType<HitStop>().Stop();
-    }
 
-    private void ApplyForceToOscillator(Vector3 n)
-    {
-        // Apply force to oscillator
-        _outerCubeOscillator.ApplyForce(Vector3.Dot(_movementVelocity, n) * n * -25f);
-    }
 
-    private void PlayBounceParticleSystem(Vector3 p, Vector3 n)
-    {
-        // TODO: Vary particle system based on speed
-        
-        // Set particle system to face normal direction
-        _bounceParticleSystem.transform.LookAt(n); // Face normal
-        //_bounceParticleSystem.transform.LookAt(_movementVelocity); // Face new velocity
-        
-        var emitParams = new ParticleSystem.EmitParams();
-        emitParams.position = p;
-        emitParams.applyShapeToPosition = true;
-        
-        // Trigger particle emission burst
-        _bounceParticleSystem.Emit(emitParams, 6);
-    }
+
 
     private void Reflect(Vector3 n)
     {
@@ -359,7 +302,5 @@ public class CharacterController : MonoBehaviour
         Debug.DrawRay(_latestContactPosition, _movementDirection * 3f, Gizmos.color);
         Gizmos.color = Color.red;
         Debug.DrawRay(_latestContactPosition, -_previousMovementDirection * 3f, Gizmos.color);
-        
-        Debug.DrawRay(_bounceParticleSystem.transform.position, _latestContactNormal, Color.blue);
     }
 }
