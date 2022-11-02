@@ -17,20 +17,27 @@ public class HitEffects : MonoBehaviour
         _characterController = GetComponent<CharacterPhysics>();
     }
 
-    public void BounceEffects(Vector3 position, Vector3 normal)
+    public void StandardBounceEffects(Vector3 position, Vector3 normal)
     {
-        ApplyForceToOscillator(Vector3.Dot(_characterController.MovementVelocity, normal) * normal * -25f);
+        ApplyForceToOscillator(Vector3.Dot(_characterController.MovementVelocity, normal) * normal * -12.5f);
         
-        PlayBounceParticleSystem(position, normal);
-        
+        PlayBounceParticleSystem(position, normal, 1.5f);
+    }
+
+    public void SuccessfulBounceEffects(Vector3 position, Vector3 normal)
+    {
+        ApplyForceToOscillator(Vector3.Dot(_characterController.MovementVelocity, normal) * normal * -37.5f);
+
         NextColor();
         
         FindObjectOfType<ColorSelector>().Flash();
 
-        FindObjectOfType<CrowdEffects>().CrowdState = CrowdState.Disappointed; // TODO: Check if corner
+        //FindObjectOfType<CrowdEffects>().CrowdState = CrowdState.Disappointed; // TODO: Check if corner
         
         _outerCubeOscillator.transform.localPosition = Vector3.zero;
         FindObjectOfType<HitStop>().Stop();
+        
+        PlayBounceParticleSystem(position, normal, 4.5f);
     }
     
     private void ApplyForceToOscillator(Vector3 force)
@@ -39,18 +46,21 @@ public class HitEffects : MonoBehaviour
         _outerCubeOscillator.ApplyForce(force);
     }
     
-    private void PlayBounceParticleSystem(Vector3 p, Vector3 n)
+    private void PlayBounceParticleSystem(Vector3 p, Vector3 n, float speedMultiplier)
     {
-        // TODO: Vary particle system based on speed
+        // Set particle system speed
+        var main = _bounceParticleSystem.main;
+        main.startSpeedMultiplier = speedMultiplier;
         
         // Set particle system to face normal direction
         _bounceParticleSystem.transform.LookAt(n); // Face normal
         //_bounceParticleSystem.transform.LookAt(_movementVelocity); // Face new velocity
-        
+
+        // Set particles start position
         var emitParams = new ParticleSystem.EmitParams();
         emitParams.position = p;
         emitParams.applyShapeToPosition = true;
-        
+
         // Trigger particle emission burst
         _bounceParticleSystem.Emit(emitParams, 6);
     }

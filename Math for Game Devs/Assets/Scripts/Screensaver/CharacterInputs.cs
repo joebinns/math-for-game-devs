@@ -48,8 +48,7 @@ public class CharacterInputs : MonoBehaviour
         {
             if (_postInputBufferDistance >= 0f)
             {
-                _characterPhysics.MovementSpeedMultiplierCount = 0;
-                FindObjectOfType<HitEffects>().BounceEffects(_characterPhysics.LatestContactPosition, _characterPhysics.LatestContactNormal);
+                SuccessfulBounce();
                 _postInputBufferDistance = 0f;
             }
             else
@@ -69,13 +68,20 @@ public class CharacterInputs : MonoBehaviour
         }
         else
         {
-            _postInputBufferDistance = INPUT_BUFFER;
+            StandardBounce();
+            // NOTE: Uncomment to turn on post input buffer.
+            _postInputBufferDistance = 0f; //INPUT_BUFFER;
         }
     }   
     
     private void SuccessfulBounce()
     {
         _characterPhysics.MovementSpeedMultiplierCount = 0;
-        FindObjectOfType<HitEffects>().BounceEffects(_characterPhysics.LatestContactPosition, _characterPhysics.LatestContactNormal);
+        FindObjectOfType<HitEffects>().SuccessfulBounceEffects(_characterPhysics.LatestContactPosition, _characterPhysics.LatestContactNormal);
+    }
+    
+    private void StandardBounce()
+    {
+        FindObjectOfType<HitEffects>().StandardBounceEffects(_characterPhysics.LatestContactPosition, _characterPhysics.LatestContactNormal);
     }
 }
