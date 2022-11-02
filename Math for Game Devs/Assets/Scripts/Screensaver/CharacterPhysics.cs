@@ -140,9 +140,13 @@ public class CharacterPhysics : MonoBehaviour
             // Otherwise, a corner is hit.
             isCorner = true;
         }
-        LatestContactPosition = point / overshoots.Count;
-        LatestContactNormal = normal / overshoots.Count;
-        
+
+        if (overshoots.Count != 0)
+        {
+            LatestContactPosition = point / overshoots.Count;
+            LatestContactNormal = normal / overshoots.Count;
+        }
+
         ResolvePotentialColliderClipping(overshoots);
     }
 

@@ -467,7 +467,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d1fccb2c6e0e8740bcfb5dac2538559, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _outerCubeOscillator: {fileID: 428900808}
+  _outerCubeOscillator: {fileID: 428900806}
   _bounceParticleSystem: {fileID: 421623207}
   _tvMaterial: {fileID: 2100000, guid: 77ded724bd4162d4a8b8f1c9a32d8525, type: 2}
   _colors:
@@ -5378,7 +5378,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 428900805}
-  - component: {fileID: 428900808}
+  - component: {fileID: 428900806}
   m_Layer: 0
   m_Name: Renderers
   m_TagString: Untagged
@@ -5405,7 +5405,7 @@ Transform:
   m_Father: {fileID: 543450653682612044}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &428900808
+--- !u!114 &428900806
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
