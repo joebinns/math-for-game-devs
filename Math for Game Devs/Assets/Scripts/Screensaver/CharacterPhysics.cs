@@ -26,7 +26,7 @@ public class CharacterPhysics : MonoBehaviour
     public Vector3 MovementDirection { get; set; }
 
     public int MovementSpeedMultiplierCount { get; set; }
-    public float MovementSpeedMultiplier => Mathf.Clamp((1f - 0.025f * MovementSpeedMultiplierCount), 0.1f, 1f);
+    public float MovementSpeedMultiplier => Mathf.Clamp((1f - 0.1f * MovementSpeedMultiplierCount), 0.1f, 1f);
     public float MovementSpeed => BaseMovementSpeed * MovementSpeedMultiplier;
     public Vector3 MovementVelocity => MovementSpeed * MovementDirection;
     public Vector3 DeltaPosition => (Time.timeScale == 0f) ? Vector3.zero : MovementVelocity * Time.fixedDeltaTime;
@@ -131,12 +131,6 @@ public class CharacterPhysics : MonoBehaviour
                 }
             }
 
-            if (raysThatHit.Count == 1)
-            {
-                MovementSpeedMultiplierCount++;
-                break;
-            }
-            
             // Otherwise, a corner is hit.
             isCorner = true;
         }

@@ -9,7 +9,7 @@ public class CharacterInputs : MonoBehaviour
     #region Input Buffer Fields
     private float _preInputBufferDistance = 0f; // To be reset when input pressed. Waits to see if condition is met.
     private float _postInputBufferDistance = 0f; // To be reset when condition met. Waits to see if input pressed.
-    private const float INPUT_BUFFER = 1.5f; // Distance
+    private const float INPUT_BUFFER = 2.25f; // Distance
     #endregion
 
     private CharacterPhysics _characterPhysics;
@@ -82,6 +82,7 @@ public class CharacterInputs : MonoBehaviour
     
     private void StandardBounce()
     {
+        _characterPhysics.MovementSpeedMultiplierCount++;
         FindObjectOfType<HitEffects>().StandardBounceEffects(_characterPhysics.LatestContactPosition, _characterPhysics.LatestContactNormal);
     }
 }
