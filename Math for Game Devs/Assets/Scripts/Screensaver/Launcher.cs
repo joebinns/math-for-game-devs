@@ -13,6 +13,12 @@ public class Launcher : MonoBehaviour
     private Vector2 _cursorPosition = Vector3.zero;
     private Vector2 _cursorDelta;
     private Vector3 _launchVelocity;
+    private Vector3 _spawnPosition;
+
+    private void Awake()
+    {
+        _spawnPosition = FindObjectOfType<CharacterPhysics>().transform.position;
+    }
 
     public void CursorDelta(InputAction.CallbackContext context)
     {
@@ -47,7 +53,7 @@ public class Launcher : MonoBehaviour
             // Reset cube
             // TODO: Change this to Lerp / spring.
             FindObjectOfType<CharacterPhysics>().BaseMovementSpeed = _launchVelocity.magnitude * 0f;
-            FindObjectOfType<CharacterPhysics>().transform.position = Vector3.zero;
+            FindObjectOfType<CharacterPhysics>().transform.position = _spawnPosition;
         }
         else if (context.canceled)
         {
