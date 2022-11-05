@@ -4,11 +4,9 @@
     <list default="true" id="ad5d346a-36af-4b48-8e65-e78257445867" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Math for Game Devs/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Math for Game Devs/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Art/Materials/CRT/CRT.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Materials/CRT/CRT.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Art/Materials/CRT/CRT.shadergraph" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Materials/CRT/CRT.shadergraph" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Art/Materials/TV.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Art/Materials/TV.mat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Lecture-1_Assignment-2.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Lecture-1_Assignment-2.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Screensaver/Launcher.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Screensaver/Launcher.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserSettings/EditorUserSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/EditorUserSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Camera/CameraRotator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Camera/CameraRotator.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UserSettings/Layouts/default-2021.dwlt" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/Layouts/default-2021.dwlt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -104,6 +102,7 @@
       <workItem from="1667378250815" duration="3462000" />
       <workItem from="1667403162819" duration="1153000" />
       <workItem from="1667557748040" duration="1874000" />
+      <workItem from="1667637703205" duration="2055000" />
     </task>
     <servers />
   </component>
