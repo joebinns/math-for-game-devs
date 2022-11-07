@@ -15,6 +15,15 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "Object",
+                    "type": "PassThrough",
+                    "id": "636c2f61-4667-430c-9829-d0433cbe7d2d",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
                     "name": "Aim",
                     "type": "PassThrough",
                     "id": "22194af3-2e4f-45dd-8e17-c75a0b669db6",
@@ -84,6 +93,17 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Bounce",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c4f2f961-1fde-460a-981b-94a49f21755b",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Object",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

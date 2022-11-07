@@ -2,7 +2,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class CameraRotator : MonoBehaviour
+public class ObjectRotator : MonoBehaviour
 {
     [SerializeField] private float _sensitivity = 0.15f;
     
@@ -26,12 +26,14 @@ public class CameraRotator : MonoBehaviour
     private void Update()
     {
         _cursorPosition += _cursorDelta * _sensitivity;
-        _cursorPosition.y = Mathf.Clamp(_cursorPosition.y, -60f, 60f);
+        //_cursorPosition.y = Mathf.Clamp(_cursorPosition.y, -60f, 60f);
 
-        var rotation = _initialRotation.eulerAngles; // TODO: Warning: This is gimbal-locked :(
-        rotation.x += - _cursorPosition.y;
-        rotation.y += _cursorPosition.x;
+        float polar = _cursorPosition.x;
+        float elevation = _cursorPosition.y;
         
-        _cameraPivot.rotation = Quaternion.Euler(rotation);
+        var rotation = Quaternion.AngleAxis(elevation, Vector3.right);
+        rotation = Quaternion.AngleAxis(polar, Vector3.forward) * rotation;
+        
+        _cameraPivot.rotation = rotation;
     }
 }
